@@ -51,3 +51,47 @@ npm run dev
 2. Navigate to `chrome://flags` and enable the **WebMCP** experimental feature. Relaunch the browser if prompted.
 3. Navigate to the `localhost` URL provided by the Vite server (typically `http://localhost:5173`).
 4. Use the interface to initiate an agent run. You'll observe the underlying WebMCP runtime expose the UI's capabilities as tools to an LLM, which autonomously handles the workflow and invokes operations back onto the page.
+
+## Local Model Support
+
+You can run the composer against any **OpenAI-compatible** local model server (Ollama, LM Studio, vLLM, etc.) without needing a LeanMCP API key.
+
+### Using a local model
+
+1. In the **Model** dropdown, select **Local / Custom API**.
+2. Fill in the three fields that appear:
+   - **Endpoint URL** — base URL of your local server, e.g. `http://localhost:11434`
+   - **API Key** — leave blank if your server does not require one
+   - **Model Name** — the model identifier your server expects, e.g. `llama3`, `mistral`, `gemma3`
+3. Click **Start Agent**.
+
+Settings are saved in `localStorage` and persist across page reloads.
+
+### CORS and the built-in proxy
+
+Browsers block direct requests to `localhost` from a page served on a different origin. If your local model server does not send CORS headers, use the included proxy:
+
+```bash
+npm run proxy -- http://localhost:11434
+```
+
+The proxy starts on `http://localhost:3033`, forwards every request to the target URL, and injects the required CORS headers. Once it is running, set the **Endpoint URL** in the app to:
+
+```
+http://localhost:3033
+```
+
+You can point the proxy at any base URL:
+
+```bash
+# Ollama (default port)
+npm run proxy -- http://localhost:11434
+
+# LM Studio (default port)
+npm run proxy -- http://localhost:1234
+
+# vLLM or any other OpenAI-compatible server
+npm run proxy -- http://localhost:8000
+```
+
+The proxy uses only Node.js built-in modules — no extra dependencies are required.
