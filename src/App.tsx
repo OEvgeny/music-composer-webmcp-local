@@ -21,6 +21,7 @@ const DEFAULT_CONFIG: AgentRunConfig = {
   objective:
     "Happy summer pop song",
   maxToolCalls: 120,
+  temperature: 0.25,
   provider: DEFAULT_MODEL.provider,
   model: DEFAULT_MODEL.model,
   apiKey: "",
@@ -714,6 +715,21 @@ export default function App() {
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const n = parseInt(e.target.value, 10);
                 if (!isNaN(n) && n >= 1) updateConfig("maxToolCalls", n);
+              }}
+            />
+          </label>
+
+          <label className="field">
+            <span>Temperature</span>
+            <input
+              type="number"
+              min={0}
+              max={2}
+              step={0.05}
+              value={config.temperature}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const n = parseFloat(e.target.value);
+                if (!isNaN(n) && n >= 0) updateConfig("temperature", n);
               }}
             />
           </label>

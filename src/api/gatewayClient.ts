@@ -44,6 +44,7 @@ export interface LlmRequest {
   messages: AnthropicChatMessage[];
   tools: AnthropicToolDefinition[];
   maxTokens?: number;
+  temperature?: number;
   sessionId?: string;
   endpointUrl?: string;
 }
@@ -56,6 +57,7 @@ interface AnthropicMessagesRequest {
   messages: AnthropicChatMessage[];
   tools: AnthropicToolDefinition[];
   maxTokens?: number;
+  temperature?: number;
   sessionId?: string;
 }
 
@@ -140,7 +142,7 @@ export async function requestAnthropicMessages(
     tools: request.tools,
     tool_choice: { type: "auto" },
     max_tokens: request.maxTokens ?? 4096,
-    temperature: 0.25
+    temperature: request.temperature ?? 0.25
   }); // Anthropic always supports temperature
 
   const send = (url: string) =>
@@ -259,7 +261,7 @@ async function requestOpenAiMessages(request: Omit<AnthropicMessagesRequest, "en
     tools: openAiTools,
     tool_choice: "auto",
     max_tokens: request.maxTokens ?? 4096,
-    ...(supportsTemperature ? { temperature: 0.25 } : {}),
+    ...(supportsTemperature ? { temperature: request.temperature ?? 0.25 } : {}),
   });
 
   const url = request.isLocal

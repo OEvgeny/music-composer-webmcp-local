@@ -391,6 +391,7 @@ export class AgentEngine {
           messages,
           tools,
           sessionId,
+          temperature: config.temperature,
           endpointUrl: config.endpointUrl
         });
 
