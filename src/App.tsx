@@ -20,6 +20,7 @@ const audioEngine = new AudioEngine();
 const DEFAULT_CONFIG: AgentRunConfig = {
   objective:
     "Happy summer pop song",
+  maxToolCalls: 120,
   provider: DEFAULT_MODEL.provider,
   model: DEFAULT_MODEL.model,
   apiKey: "",
@@ -700,6 +701,20 @@ export default function App() {
               value={config.objective}
               onChange={(event: ChangeEvent<HTMLTextAreaElement>) => updateConfig("objective", event.target.value)}
               rows={4}
+            />
+          </label>
+
+          <label className="field">
+            <span>Max tool calls</span>
+            <input
+              type="number"
+              min={1}
+              max={12000}
+              value={config.maxToolCalls}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const n = parseInt(e.target.value, 10);
+                if (!isNaN(n) && n >= 1) updateConfig("maxToolCalls", n);
+              }}
             />
           </label>
 

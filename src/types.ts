@@ -70,6 +70,7 @@ export type LlmProvider = "openai" | "anthropic" | "local";
 
 export interface AgentRunConfig {
   objective: string;
+  maxToolCalls: number;
   provider: LlmProvider;
   model: string;
   apiKey: string;
