@@ -364,7 +364,7 @@ export class AgentEngine {
     const messages: AnthropicChatMessage[] = [{ role: "user", content: `Objective: ${config.objective}` }];
 
     const tools = toolMap(this.runtime);
-    const SAFETY_CAP = 120;
+    const SAFETY_CAP = 1200;
 
     this.runtime.log("Composition agent started", "info", {
       provider: config.provider,
