@@ -13,18 +13,18 @@ To read the official specification, visit [webmcp.link](https://webmcp.link/).
 
 ## Local Setup
 
-To run this protocol demonstration locally, you will need a LeanMCP API key and Google Chrome Canary.
+The default model is **Local / Custom API**, which works with any OpenAI-compatible server (Ollama, LM Studio, etc.) and requires **no LeanMCP account**. A LeanMCP API key is only needed if you want to use the hosted cloud models (GPT-5, Claude, etc.).
 
 ### 1. Requirements
 
 - [Node.js](https://nodejs.org/) installed on your machine.
 - [Google Chrome Canary](https://www.google.com/chrome/canary/). Experimental WebMCP features are best tested on the bleeding-edge browser.
-- A **LeanMCP API Token**. Get yours from the [LeanMCP API Keys dashboard](https://app.leanmcp.com/api-keys).
-- **Adequate Credits** on your LeanMCP account. Manage your billing [here](https://app.leanmcp.com/billing).
+- **For local models only:** a running OpenAI-compatible server such as [Ollama](https://ollama.com/) or [LM Studio](https://lmstudio.ai/).
+- **For cloud models only:** a **LeanMCP API Token**. Get yours from the [LeanMCP API Keys dashboard](https://app.leanmcp.com/api-keys), with adequate credits managed [here](https://app.leanmcp.com/billing).
 
-### 2. Environment Variables
+### 2. Environment Variables (cloud models only)
 
-Navigate to this directory (`webmcp-react`). Copy the example environment file to configure your credentials:
+If you plan to use a hosted cloud model, copy the example environment file and fill in your LeanMCP API token:
 
 ```bash
 cp .env.example .env
@@ -35,6 +35,8 @@ Edit `.env` and assign your actual API token:
 ```env
 VITE_GATEWAY_API_KEY=your_actual_leanmcp_api_token_here
 ```
+
+This step can be skipped entirely if you only intend to use a local model.
 
 ### 3. Installation & Running
 
@@ -50,7 +52,8 @@ npm run dev
 1. Open **Google Chrome Canary**.
 2. Navigate to `chrome://flags` and enable the **WebMCP** experimental feature. Relaunch the browser if prompted.
 3. Navigate to the `localhost` URL provided by the Vite server (typically `http://localhost:5173`).
-4. Use the interface to initiate an agent run. You'll observe the underlying WebMCP runtime expose the UI's capabilities as tools to an LLM, which autonomously handles the workflow and invokes operations back onto the page.
+4. The **Local / Custom API** option is pre-selected. Fill in your local server endpoint and model name, then click **Start Agent**.
+5. To use a hosted cloud model instead, select it from the model dropdown (a LeanMCP account is required) and click **Start Agent**.
 
 ## Local Model Support
 

@@ -679,7 +679,7 @@ export default function App() {
             <strong>{snapshot.isNativeSupported ? "Native WebMCP" : "Polyfill runtime"}</strong>
             <span>{statusMessage}</span>
           </div>
-          {user ? (
+          {!isLocalProvider && (user ? (
             <div className="auth-bar">
               {user.photoURL && <img className="auth-avatar" src={user.photoURL} alt="" referrerPolicy="no-referrer" />}
               <span className="auth-email">{user.displayName ?? user.email}</span>
@@ -690,7 +690,7 @@ export default function App() {
               <button className="btn primary" onClick={login}>Sign in with Google</button>
               <span className="auth-hint">1 free generation, then sign in</span>
             </div>
-          )}
+          ))}
         </section>
 
         <section className="panel">
@@ -739,12 +739,12 @@ export default function App() {
             <select
               value={config.model}
               onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                const opt = MODEL_OPTIONS.find((m) => m.model === event.target.value);
+                const opt = MODEL_OPTIONS.find((m) => m.model === event.target.value && !m.delimiter);
                 if (opt) setConfig((prev) => ({ ...prev, provider: opt.provider, model: opt.model }));
               }}
             >
               {MODEL_OPTIONS.map((opt) => (
-                <option key={opt.model} value={opt.model} disabled={opt.loginRequired && !user}>
+                <option key={opt.model} value={opt.model} disabled={opt.delimiter || (opt.loginRequired && !user)}>
                   {opt.label}{opt.loginRequired ? " (sign in)" : ""}
                 </option>
               ))}
