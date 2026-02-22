@@ -1,9 +1,11 @@
 # WebMCP Demo: Music Composer
 
-This project is a functional demonstration of the [WebMCP Protocol](https://webmcp.link/), illustrating how AI agents can interact with local browser contexts (tools) to achieve complex workflows autonomously.
+This is a modified version of a functional demonstration of the [WebMCP Protocol](https://webmcp.link/), illustrating how AI agents can interact with local browser contexts (tools) to achieve complex workflows autonomously.
 
-You can try the live demo for free at: **[https://music.leanmcp.live](https://music.leanmcp.live)**  
+You can try the official live demo at: **[https://music.leanmcp.live](https://music.leanmcp.live)**  
 *(Note: You must open this link in **[Google Chrome Canary](https://www.google.com/chrome/canary/)** and enable the WebMCP flag in `chrome://flags` for the WebMCP features to work best, otherwise, it'll use a polyfill.)*
+
+This repo provides you with the option to bring you own API_KEY or own local model. The demo is available at:  **[https://oevgeny-music-compos-epfx.bolt.host](https://oevgeny-music-compos-epfx.bolt.host)**
 
 ## What is WebMCP?
 
