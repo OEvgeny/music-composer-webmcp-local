@@ -1485,7 +1485,7 @@ async function renderToBuffer(
 
   const trackSoundfontPlayers = new Map<string, SoundfontPlayerInstance>();
   await Promise.all(Object.entries(tracksToRender).map(async ([trackName, track]) => {
-    const gmName = resolveGmName(track.instrument);
+    const gmName = resolveGmName(track.instrument, track.variant);
     if (!gmName) return;
     const player = await Soundfont.instrument(ctx, gmName, { soundfont: "MusyngKite", format: "mp3" });
     trackSoundfontPlayers.set(trackName, player);
@@ -1559,7 +1559,7 @@ async function renderToBuffer(
     const durSecs = Math.max(0.05, (mn.duration * secondsPerBeat) + tail);
 
     if (player) {
-      const gainVal = Math.max(0.01, Math.min(1, mn.velocity / 127));
+      const gainVal = Math.max(0.01, Math.min(1, mn.velocity / 127)) * (track.volume ?? 1);
       player.play(pitchToMidi(mn.pitch), mn.beat * secondsPerBeat, {
         gain: gainVal,
         duration: durSecs,
