@@ -22,6 +22,7 @@ const DEFAULT_CONFIG: AgentRunConfig = {
     "Happy summer pop song",
   maxToolCalls: 120,
   temperature: 0.25,
+  maxTokens: 4096,
   provider: DEFAULT_MODEL.provider,
   model: DEFAULT_MODEL.model,
   apiKey: "",
@@ -760,6 +761,21 @@ export default function App() {
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const n = parseFloat(e.target.value);
                 if (!isNaN(n) && n >= 0) updateConfig("temperature", n);
+              }}
+            />
+          </label>
+
+          <label className="field">
+            <span>Max Tokens</span>
+            <input
+              type="number"
+              min={1}
+              max={32000}
+              step={256}
+              value={config.maxTokens}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const n = parseInt(e.target.value, 10);
+                if (!isNaN(n) && n >= 1) updateConfig("maxTokens", n);
               }}
             />
           </label>

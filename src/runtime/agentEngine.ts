@@ -392,6 +392,7 @@ export class AgentEngine {
           tools,
           sessionId,
           temperature: config.temperature,
+          maxTokens: config.maxTokens,
           endpointUrl: config.endpointUrl
         });
 

@@ -72,6 +72,7 @@ export interface AgentRunConfig {
   objective: string;
   maxToolCalls: number;
   temperature: number;
+  maxTokens: number;
   provider: LlmProvider;
   model: string;
   apiKey: string;
