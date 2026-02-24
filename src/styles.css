@@ -411,6 +411,34 @@ code {
   }
 }
 
+/* ─── Global thin scrollbars ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(49, 212, 255, 0.25) rgba(5, 13, 28, 0.55);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(5, 13, 28, 0.55);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(49, 212, 255, 0.25);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(49, 212, 255, 0.45);
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(5, 13, 28, 0.55);
+}
+
 /* ─── Stage panel layout for music sequencer ─── */
 .stage-panel {
   display: flex;
