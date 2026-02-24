@@ -4,7 +4,7 @@ import { saveShare, loadShare } from "./runtime/shareService";
 import { useAuth } from "./runtime/useAuth";
 import { PianoRoll, type PianoRollHandle } from "./components/PianoRoll";
 import { PlaybackControls } from "./components/PlaybackControls";
-import { AudioEngine, exportMp3, exportStems } from "./runtime/audioEngine";
+import { AudioEngine, exportMp3, exportWav, exportStems } from "./runtime/audioEngine";
 import { AgentEngine } from "./runtime/agentEngine";
 import { createMusicTools, createInitialCompositionState } from "./runtime/musicToolRegistry";
 import { ReplayEngine } from "./runtime/replayEngine";
@@ -212,6 +212,7 @@ export default function App() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [activeNotes, setActiveNotes] = useState<Set<number>>(new Set());
   const [isExportingMp3, setIsExportingMp3] = useState(false);
+  const [isExportingWav, setIsExportingWav] = useState(false);
   const [isExportingStems, setIsExportingStems] = useState(false);
   const [mutedTracks, setMutedTracks] = useState<Set<string>>(new Set());
   const mutedTracksRef = useRef<Set<string>>(new Set());
@@ -597,6 +598,33 @@ export default function App() {
     }
   }, []);
 
+  const handleExportWav = useCallback(async () => {
+    const comp = compositionRef.current;
+    if (!comp.notes.length) {
+      setStatusMessage("No composition to export.");
+      return;
+    }
+    setIsExportingWav(true);
+    setStatusMessage("Rendering WAV...");
+    try {
+      const blob = await exportWav(comp);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `composition-${Date.now()}.wav`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+      setStatusMessage("WAV exported");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setStatusMessage(`WAV export failed: ${msg}`);
+    } finally {
+      setIsExportingWav(false);
+    }
+  }, []);
+
   const replayFromHash = async () => {
     const shareParam = readShareParam();
     if (!shareParam) {
@@ -658,10 +686,12 @@ export default function App() {
           onStop={handleStop}
           onExport={handleExport}
           onExportMp3={handleExportMp3}
+          onExportWav={handleExportWav}
           onExportStems={handleExportStems}
           onShare={handleShare}
           shareUrl={shareUrl}
           isExportingMp3={isExportingMp3}
+          isExportingWav={isExportingWav}
           isExportingStems={isExportingStems}
           onStopAgent={stopAgent}
         />

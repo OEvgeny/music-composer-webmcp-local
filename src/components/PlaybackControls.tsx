@@ -9,10 +9,12 @@ interface PlaybackControlsProps {
   onStop: () => void;
   onExport: () => void;
   onExportMp3: () => void;
+  onExportWav: () => void;
   onExportStems: () => void;
   onShare: () => void;
   shareUrl: string | null;
   isExportingMp3: boolean;
+  isExportingWav: boolean;
   isExportingStems: boolean;
   onStopAgent?: () => void;
 }
@@ -25,10 +27,12 @@ export function PlaybackControls({
   onStop,
   onExport,
   onExportMp3,
+  onExportWav,
   onExportStems,
   onShare,
   shareUrl,
   isExportingMp3,
+  isExportingWav,
   isExportingStems,
   onStopAgent
 }: PlaybackControlsProps) {
@@ -110,6 +114,26 @@ export function PlaybackControls({
             </svg>
           )}
           <span>{isExportingMp3 ? "Rendering..." : "MP3"}</span>
+        </button>
+
+        <button
+          className="playback-btn secondary-btn wav-btn"
+          onClick={onExportWav}
+          disabled={!hasNotes || isExportingWav}
+          title="Export as lossless WAV"
+        >
+          {isExportingWav ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" strokeDasharray="8 4">
+                <animateTransform attributeName="transform" type="rotate" from="0 7 7" to="360 7 7" dur="0.8s" repeatCount="indefinite" />
+              </circle>
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+            </svg>
+          )}
+          <span>{isExportingWav ? "Rendering..." : "WAV"}</span>
         </button>
 
         <button

@@ -1468,36 +1468,66 @@ async function renderToBuffer(
     ? composition.notes.filter((n) => trackFilter.has(n.track))
     : composition.notes;
 
-  const usedInstruments = new Set(
-    notesToRender
-      .map((n) => composition.tracks[n.track]?.instrument)
-      .filter((i): i is InstrumentName => !!i && !!resolveGmName(i))
-  );
-
-  const localPlayers = new Map<string, SoundfontPlayerInstance>();
-  await Promise.all([...usedInstruments].map(async (inst) => {
-    const gmName = resolveGmName(inst)!;
-    const player = await Soundfont.instrument(ctx, gmName, { soundfont: "MusyngKite", format: "mp3" });
-    localPlayers.set(inst, player);
-  }));
-
   const master = offlineCtx.createGain();
-  master.gain.value = 0.65;
-  master.connect(offlineCtx.destination);
+  master.gain.value = 0.9;
+
+  const masterComp = offlineCtx.createDynamicsCompressor();
+  masterComp.threshold.value = -12;
+  masterComp.knee.value = 15;
+  masterComp.ratio.value = 6;
+  masterComp.attack.value = 0.01;
+  masterComp.release.value = 0.25;
+  master.connect(masterComp);
+  masterComp.connect(offlineCtx.destination);
 
   const reverbBus = createReverb(offlineCtx);
   reverbBus.output.connect(master);
+
+  const trackSoundfontPlayers = new Map<string, SoundfontPlayerInstance>();
+  await Promise.all(Object.entries(tracksToRender).map(async ([trackName, track]) => {
+    const gmName = resolveGmName(track.instrument);
+    if (!gmName) return;
+    const player = await Soundfont.instrument(ctx, gmName, { soundfont: "MusyngKite", format: "mp3" });
+    trackSoundfontPlayers.set(trackName, player);
+  }));
 
   const trackChains = new Map<string, GainNode>();
   for (const [name, track] of Object.entries(tracksToRender)) {
     const g = offlineCtx.createGain();
     g.gain.value = track.volume ?? 1;
+
+    const comp = offlineCtx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 10;
+    comp.ratio.value = 4;
+    comp.attack.value = 0.01;
+    comp.release.value = 0.25;
+    g.connect(comp);
+
     const p = offlineCtx.createStereoPanner();
     p.pan.value = track.pan ?? 0;
 
-    let postGain: AudioNode = g;
-    if (track.distortion) postGain = applyDistortion(ctx, g, track.distortion);
+    let postGain: AudioNode = comp;
+    if (track.distortion) postGain = applyDistortion(ctx, postGain, track.distortion);
     if (track.delayParams) postGain = applyDelay(ctx, postGain, track.delayParams);
+    if (track.eq) {
+      if (track.eq.highpassHz) {
+        const hp = offlineCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = track.eq.highpassHz;
+        hp.Q.value = 0.5;
+        postGain.connect(hp);
+        postGain = hp;
+      }
+      if (track.eq.lowpassHz) {
+        const lp = offlineCtx.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.value = track.eq.lowpassHz;
+        lp.Q.value = 0.5;
+        postGain.connect(lp);
+        postGain = lp;
+      }
+    }
     postGain.connect(p);
     p.connect(master);
 
@@ -1508,6 +1538,10 @@ async function renderToBuffer(
       postGain.connect(reverbSend);
       reverbSend.connect(reverbBus.input);
     }
+
+    const player = trackSoundfontPlayers.get(name);
+    if (player) player.connect(g);
+
     trackChains.set(name, g);
   }
 
@@ -1519,7 +1553,7 @@ async function renderToBuffer(
     const dest = trackChains.get(mn.track);
     if (!dest) continue;
 
-    const player = localPlayers.get(track.instrument);
+    const player = trackSoundfontPlayers.get(mn.track);
     const isSustained = SUSTAINED_INSTRUMENTS.includes(track.instrument);
     const tail = isSustained ? 0.75 : 0.25;
     const durSecs = Math.max(0.05, (mn.duration * secondsPerBeat) + tail);
@@ -1587,6 +1621,11 @@ function bufferToMp3(rendered: AudioBuffer): Blob {
 export async function exportMp3(composition: CompositionState): Promise<Blob> {
   const rendered = await renderToBuffer(composition);
   return bufferToMp3(rendered);
+}
+
+export async function exportWav(composition: CompositionState): Promise<Blob> {
+  const rendered = await renderToBuffer(composition);
+  return audioBufferToWav(rendered);
 }
 
 export async function exportStems(
